@@ -1,0 +1,487 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{comment} 
+\usepackage{fullpage} 
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{blindtext}
+\usepackage{amsthm}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+\newtheorem{innercustomgeneric}{\customgenericname}
+\providecommand{\customgenericname}{}
+\newcommand{\newcustomtheorem}[2]{%
+  \newenvironment{#1}[1]
+  {%
+   \renewcommand\customgenericname{#2}%
+   \renewcommand\theinnercustomgeneric{##1}%
+   \innercustomgeneric
+  }
+  {\endinnercustomgeneric}
+}
+
+\newcustomtheorem{customthm}{Theorem}
+\newcustomtheorem{customlemma}{Lemma}
+
+
+
+\title{Statistical Learning Theory Group 3 Project}
+\date{\today}
+\author{Yen-Lin Chen\thanks{Department of Applied and Engineering Physics}\\ Part of the Work of Group 3}
+
+
+\begin{document}
+\maketitle
+
+This short report is part of the work of Group 3. In this report, I will pave the steps toward proving the LASSO oracle inequality, Theorem 7.19 of the book. I will focus mainly on Theorem 7.16 and Lemma 7.24 because with both, the LASSO oracle inequality becomes straightforward. We consider the Lagrangian LASSO setting with the model $y = \mathbf{X}\theta^* + w$. 
+\begin{equation}
+\hat{\theta} = \argmin_{\theta\in\mathbb{R}^d}\left\{ \frac{1}{2n} \left\Vert y-\mathbf{X}\theta \right\Vert_2^2 +\lambda_n\left\Vert \theta \right\Vert_1 \right\}
+\end{equation}
+$\mathbf{X}\in\mathbb{R}^{n\times d}$, $y\in\mathbb{R}^n$ and $w\in\mathbb{R}^n$. The aim is to upper bound the quantity $\Vert\hat{\theta}-\theta^* \Vert_2$. \\
+
+
+\begin{customthm}{7.13}
+Under the following 2 assumptions: 
+\begin{enumerate}
+\item sparse $\theta^*$ is supported on $S\subseteq\{1,2,\dots, d\}$ with $\vert S \vert = s$.
+\item $\mathbf{X}$ satisfies restricted eigenvale condition over $S$ with parameter $(\kappa, \alpha)$. 
+\begin{equation}
+\frac{1}{n}\Vert\mathbf{X}\Delta\Vert_2^2 \geq \kappa\Vert\Delta\Vert_2^2 \quad \forall \Delta \in \mathbb{C}_\alpha(S)
+\end{equation}
+where $\mathbf{C}_\alpha(S) = \left\{ \Delta\in\mathbf{R}^d \vert \Vert \Delta_{S^C} \Vert_1 \leq \alpha\Vert \Delta_S\Vert_1 \right\}$ and $S^C$ denotes the complementary set of $S$. 
+\end{enumerate}
+
+If $\lambda_n \geq 2 \Vert\frac{\mathbf{X}'w}{n} \Vert_\infty$, $\hat{\theta}$ satisfies the bound: 
+\begin{equation}
+\Vert\hat{\theta}-\theta^* \Vert_2 \leq\frac{3}{\kappa}\sqrt{s}\lambda_n
+\end{equation}
+\end{customthm}
+
+
+
+\begin{proof}
+The proof was done in class so I summarize it briefly. Since $\hat{\theta}$ is optimal in Eq. (1). 
+\begin{equation}
+\frac{1}{2n} \left\Vert y-\mathbf{X}\hat{\theta} \right\Vert_2^2 +\lambda_n\left\Vert \hat{\theta} \right\Vert_1 \leq \frac{1}{2n} \left\Vert y-\mathbf{X}\theta^* \right\Vert_2^2 +\lambda_n\left\Vert \theta^* \right\Vert_1
+\end{equation}
+\begin{equation}
+\iff \frac{1}{2n} \left\Vert w-\mathbf{X}(\hat{\theta}-\theta^*) \right\Vert_2^2 \leq \frac{1}{2n}\left\Vert w\right\Vert_2^2 + \lambda_n\left(\left\Vert\theta^* \right\Vert_1  - \left\Vert\hat{\theta} \right\Vert_1 \right)
+\end{equation}
+\begin{equation}
+\iff \frac{1}{n}\left\Vert\mathbf{X}\hat{\Delta} \right\Vert_2^2 \leq 2\frac{w'\mathbf{X}\hat{\Delta}}{n} + 2\lambda_n \left(\left\Vert\theta^* \right\Vert_1  - \left\Vert\hat{\theta} \right\Vert_1 \right)
+\end{equation}
+where $\hat{\Delta} = \hat{\theta} - \theta^*$. We use the following three properties. 
+\begin{equation}
+\kappa\Vert\hat{\Delta}\Vert_2^2 \leq \frac{1}{n}\left\Vert\mathbf{X}\hat{\Delta} \right\Vert_2^2
+\end{equation}
+\begin{equation}
+\frac{w'\mathbf{X}\hat{\Delta}}{n} = \left(\frac{\hat{\Delta}\mathbf{X}}{n}\right)'w \leq \left\Vert\frac{\mathbf{X}'w}{n} \right\Vert_\infty\left\Vert\hat{\Delta} \right\Vert_1 \leq \frac{\lambda_n}{2}
+\end{equation}
+\begin{equation}
+\begin{split}
+\left\Vert\theta^* \right\Vert_1  - \left\Vert\hat{\theta} \right\Vert_1 & = \left\Vert\theta_S^* \right\Vert_1 - \left\Vert \theta^*+\hat{\Delta} \right\Vert_1 \\ 
+ & = \left\Vert\theta^*_S \right\Vert_1 - \left\Vert\theta_S^* + \bar{\Delta}_S \right\Vert_1 - \left\Vert\hat{\Delta}_{S^C} \right\Vert_1 \\
+ & \leq \left\Vert\hat{\Delta}_S \right\Vert_1 - \left\Vert\hat{\Delta}_{S^C} \right\Vert_1 
+\end{split}
+\end{equation}
+Therefore, by plugging the above inequalities into Eq. (6), 
+\begin{equation}
+\begin{split}
+\kappa\Vert\hat{\Delta}\Vert_2^2 & \leq \lambda_n\left\Vert\hat{\Delta} \right\Vert_1 + 2\lambda_n\left( \left\Vert\hat{\Delta}_S \right\Vert_1 - \left\Vert\hat{\Delta}_{S^C} \right\Vert_1 \right) \\
+ & \leq \lambda_n\left(3\left\Vert\hat{\Delta}_{S} \right\Vert_1 - \left\Vert\hat{\Delta}_{S^C} \right\Vert_1 \right) \\
+ & \leq 3\lambda_n\left\Vert\hat{\Delta}_{S} \right\Vert_1\\
+ & \leq 3\lambda_n\sqrt{s}\left\Vert\hat{\Delta} \right\Vert_2
+\end{split}
+\end{equation}
+\begin{equation}
+\Vert\hat{\Delta} \Vert_2 = \Vert\hat{\theta}-\theta^* \Vert_2 \leq\frac{3}{\kappa}\sqrt{s}\lambda_n
+\end{equation}
+\end{proof}
+
+
+
+Theorem 7.13 bases on the restricted eigenvalue condition of $\mathbf{X}$. Let's consider the case where $\mathbf{X}$ is now random and the aim is again to upper bound the quantity $\Vert\hat{\theta}-\theta^* \Vert_2$ with high probability, where $\hat{\theta}$ is the solution for the Lagrangian LASSO equation, i.e. Eq. (1). To this end, we need the following property for the quantity $\frac{1}{n}\left\Vert\mathbf{X}\theta \right\Vert_2^2$. \\
+
+
+\begin{customthm}{7.16}
+Consider a random matrix $\mathbf{X}\in\mathbb{R}^{n\times d}$ with iid rows $x_i\in\mathbf{R}^d$ from the normal distribution $\mathcal{N}(0, \mathbf{\Sigma})$. Then there are universal constants $c_1 < 1 < c_2$ such that
+\begin{equation}
+\frac{1}{n}\left\Vert\mathbf{X}\theta \right\Vert_2^2 \geq c_1\left\Vert\sqrt{\mathbf{\Sigma}}\theta \right\Vert_2^2 - c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1 \quad \forall \theta\in\mathbb{R}^d
+\end{equation}
+with probability at least $1-\frac{e^{-n/32}}{1-e^{-n/32}}$.
+\end{customthm}
+
+\begin{proof}[proof of Theorem 7.16]\renewcommand{\qedsymbol}{}
+
+By re-scaling of the vector $\theta$, it suffices to prove the result on the ellipse: 
+\begin{equation}
+\mathbb{S}^{d-1}(\mathbf{\Sigma}) = \left\{ \theta\in\mathbb{R}^d \middle| \left\Vert \sqrt{\mathbf{\Sigma}\theta} \right\Vert_2 = 1 \right\}
+\end{equation}
+To obtain the "$\geq$" in Eq. (12), it is equivalent to upper bound the probability of the "$\leq$" event: 
+\begin{equation}
+\mathcal{Q}(c_1, c_2) = \left\{ \mathbf{X}\in\mathbb{R}^{n\times d} \middle| \frac{1}{n}\left\Vert\mathbf{X}\theta \right\Vert_2^2 \leq c_1\left\Vert\sqrt{\mathbf{\Sigma}}\theta \right\Vert_2^2 - c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1^2 \right\}
+\end{equation}
+For all $\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})$, define the "bad" event as the following: 
+\begin{equation}
+\mathcal{E} = \left\{\mathbf{X}\in\mathbb{R}^{n\times d} \middle| \inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}} \leq \frac{1}{4} - 4\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1 \right\}
+\end{equation}
+$\forall \mathbf{X}$ satisfying the events in $\mathcal{E}$, the following holds because $2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1 \geq 0$. 
+\begin{equation}
+\inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}} \leq \frac{1}{4} + 4\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1
+\end{equation}
+Define another event as 
+\begin{equation}
+\mathcal{E}' = \left\{\mathbf{X}\in\mathbb{R}^{n\times d} \middle| \inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2^2}{n} \leq \frac{1}{16} - 16\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1^2 \right\}
+\end{equation}
+$\forall\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})$, $\left\Vert\sqrt{\mathbf{\Sigma}}\theta \right\Vert_2=1$. $\mathcal{Q}\left(\frac{1}{16}, 16\right) \subseteq \mathcal{E}' \subseteq \mathcal{E}$. Notice that under "good" events $\mathcal{E}^C$, the event $\mathcal{Q}\left(\frac{1}{16}, 16\right)^C$ occurs for sure. Now, the aim is to upper bound the probability $P(\mathcal{E})$. 
+
+For a pair of radii $0\leq r_l < r_u$, define the set $\mathbb{K}(r_l, r_u)$
+\begin{equation}
+\mathbb{K}(r_l, r_u) = \left\{ \theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma}) \middle| 2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1\in\left[r_l, r_u \right]\right\}
+\end{equation}
+and the corresponding bad event $\mathcal{A}$ 
+\begin{equation}
+\mathcal{A}(r_l, r_u) = \left\{\inf_{\theta\in\mathbb{K}(r_l, r_u)}\frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}}\leq \frac{1}{2}-2r_u \right\}
+\end{equation}
+\end{proof}
+
+We will need the following lemma. Lemma 7.24 uses $\mathbb{K}(r_l, r_u)$ and $\mathcal{A}(r_l, r_u)$ to upper bound the probability $P(\mathcal{E})$. 
+
+
+
+\begin{customlemma}{7.24}
+For any pair of radii $0\leq r_l<r_u$, we have 
+\begin{equation}
+P\left[\mathcal{A}(r_l, r_u)\right] \leq e^{-\frac{n}{32}}e^{-\frac{n}{2}r_u^2}
+\end{equation}
+
+Furthermore, for some constant $\mu\geq \frac{1}{8}$, we have
+\begin{equation}
+\mathcal{E} \subseteq \mathcal{A}(0, \mu) \cup \left(\bigcup_{l=1}^\infty \mathcal{A}(2^{l-1}\mu, 2^l\mu) \right)
+\end{equation}
+\end{customlemma}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=4in]{kset.png}
+  \caption{The two-dimensional illustration of the set $\mathbb{K}(r_l, r_u)$ with increasing $r_l$ and $r_u$. }
+  \label{fig:kset}
+\end{figure}
+
+The intuition is to partition the ellipse, $\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})$ into infinitely many disjoint subsets $\mathbb{K}(r_l, r_u)$ and obtain the probability of "bad" events $\mathcal{A}(r_l, r_u)$ within each subset. As $r_u$ grows: $(r_l, r_u) = (0, \mu)\to(\mu, 2\mu)\to(2\mu, 4\mu)\to\dots$ we will have fewer and fewer "bad" events. The two-dimensional illustration of the set $\mathbb{K}(r_l, r_u)$ with increasing $r_u$ is shown in Fig. 1. It is apparent that the set $\mathbb{K}(r_l, r_u)$ is empty for most pairs of the radii. In other words, the d-dimensional $l$1-ball only intersects with the ellipse for a specific choice of its radius. Note that by the construction of $\mathcal{A}(r_l, r_u)$ in Eq. (19) , $\mathcal{A}(r_l, r_u) = \phi$ for all $r_u > \frac{1}{4}$. In the textbook, it says $\mu = \frac{1}{4}$ for the sake of proving Theorem 7.16 (with minor errors in the original proof) but $\mu=\frac{1}{4}$ is not general for Lemma 7.24. Here, I will derive the general values of $\mu$ in the following proof. 
+
+\begin{proof}[proof of Lemma 7.24]
+I'll start with the proof of Eq. (21) by considering the following two cases. 
+\begin{enumerate}
+\item $\theta\in\mathbb{K}(r_l = 0, r_u=\mu) \Longrightarrow 2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1 \leq \mu$.\\
+
+Therefore, if $\theta$ certifies the event $\mathcal{E}$, I want to determine $\mu$ such that $\mathcal{A}(0, \mu)$ is certified for sure. That is to say, 
+\begin{equation}
+\begin{split}
+\frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}} & \leq \frac{1}{4} - 4\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1\\
+ & \leq \frac{1}{4} \\
+ & \leq \frac{1}{2} - 2\mu \quad \text{ensuring} \quad \mathcal{A}(0, \mu)\\
+\end{split}
+\end{equation}
+Therefore, we have $\mu \geq \frac{1}{8}$.
+
+\item $\theta\in\mathbb{K}(r_l = 2^{l-1}\mu, r_u=2^l\mu)$ for some $l\in\mathbb{N}\Longrightarrow 2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1 \geq 2^{l-1}\mu$.\\
+
+If $\theta$ certifies the event $\mathcal{E}$, i.e.
+\begin{equation}
+\begin{split}
+\frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}} & \leq \frac{1}{4} - 4\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\theta \right\Vert_1\\
+ & \leq \frac{1}{4} - 2\left(2^{l-1}\mu\right) = \frac{1}{4} - 2^l\mu \\
+ & \leq 2\left(\frac{1}{4} - 2^l\mu \right) = \frac{1}{2} - 2r_u
+\end{split}
+\end{equation}
+
+Therefore, $\mathcal{A}(r_l = 2^{l-1}\mu, r_u=2^l\mu)$ occurs for sure. Notice that this this case, the value of $\mu$ is totally irrelevant, as long as it is positive. 
+\end{enumerate}
+
+Combining case 1 and 2, the proof of Eq. (21) is complete. Let's now focus on constructing the tail bound for the probability of event $\mathcal{A}(r_l, r_u)$. By the construction of $\mathcal{A}$, it is equivalent to upper bound the following quantity . 
+\begin{equation}
+T(r_l, r_u) = -\inf_{\theta\in\mathbb{K}(r_l, r_u)}\frac{\left\Vert\mathbf{X}\theta \right\Vert_2}{\sqrt{n}}
+\end{equation}
+For any vector $v\in\mathbb{R}^n$, the $l_2$-norm $\Vert v\Vert_2$ can be written as the following
+\begin{equation}
+\Vert v\Vert_2 = \sup_{u\in\mathbb{S}^{n-1}}\langle u,v \rangle
+\end{equation}
+where $\mathbb{S}^{n-1}$ is the ellipse in $\mathbb{R}^n$. Therefore, 
+\begin{equation}
+T(r_l, r_u) = -\inf_{\theta\in\mathbb{K}(r_l, r_u)}\left[\sup_{u\in\mathbb{S}^{n-1}}\frac{\langle u,\mathbf{X}\theta \rangle}{\sqrt{n}}\right] = \sup_{\theta\in\mathbb{K}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}\frac{\langle u,\mathbf{X}\theta \rangle}{\sqrt{n}}\right]
+\end{equation}
+Rewrite $\mathbf{X} = \mathbf{W}\sqrt{\mathbf{\Sigma}}$ where $\mathbf{W}\in\mathbb{R}^{n\times d}$ is a standard Gaussian matrix. Moreover, with $v = \sqrt{\mathbf{\Sigma}}\theta$, we have $\mathbf{X}\theta = \mathbf{W}\sqrt{\mathbf{\Sigma}}\theta = \mathbf{W}v$. 
+\begin{equation}
+T(r_l, r_u) = \sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}\frac{\langle u,\mathbf{W}v \rangle}{\sqrt{n}}\right] = \sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}Z_{u,v}\right]
+\end{equation}
+where $Z_{u,v} = \frac{\langle u,\mathbf{W}v \rangle}{\sqrt{n}}$ and this operation transforms the ellipse set of $\theta$ in to a ball set of $v$, i.e. 
+\begin{equation}
+\tilde{\mathbb{K}}(r_l, r_u) = \left\{ v\in\mathbb{R}^d \middle| 2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}}\left\Vert\mathbf{\Sigma}^{-\frac{1}{2}}v \right\Vert_1\in\left[r_l, r_u \right]\right\}
+\end{equation}
+
+Note that after the transformation, $u\in\mathbb{S}^{n-1}\subseteq\mathbb{R}^n$ and $v\in\mathbb{S}^{d-1}\subseteq\mathbb{R}^d$. Therefore $Z_{u, v}\sim\mathcal{N}(0, n^{-1})$, which is useful in designing another random variable with larger variance to upper bound Eq. (27). Let $g\in\mathbb{R}^n$ and $h\in\mathbb{R}^d$ with iid elements from $\mathcal{N}(0,1)$, construct two random variables as the following
+\begin{equation}
+Y'_{u} = \frac{\langle g,u \rangle}{\sqrt{n}} \quad Y_{u, v} = \frac{\langle g,u \rangle}{\sqrt{n}} + \frac{\langle h,v \rangle}{\sqrt{n}}
+\end{equation}
+with $\text{var}(Z_{u, v}) \leq \text{var}(Y'_{u}) \leq \text{var}(Y_{u, v})$. With Gordon's inequality, 
+\begin{equation}
+\begin{split}
+E\left\{\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}Z_{u,v}\right] \right\} & \leq E\left\{\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}Y'_{u}\right] \right\}\\
+ & \leq E\left\{\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}Y_{u,v}\right] \right\}\\
+ & = E\left\{\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}\frac{\langle g,u \rangle}{\sqrt{n}}\right] \right\} + E\left\{\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\left[\inf_{u\in\mathbb{S}^{n-1}}\frac{\langle h,v \rangle}{\sqrt{n}}\right] \right\} \\
+ & = E\left( \inf_{u\in\mathbb{S}^{n-1}}\frac{\langle g,u \rangle}{\sqrt{n}}\right) + E\left(\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\frac{\langle h,v \rangle}{\sqrt{n}}\right)\\
+ & = -E\left(\frac{\left\Vert g \right\Vert_2}{\sqrt{n}} \right) + E\left(\sup_{v\in\tilde{\mathbb{K}}(r_l, r_u)}\frac{\langle h,v \rangle}{\sqrt{n}}\right) \\ 
+ & = -E\left(\frac{\left\Vert g \right\Vert_2}{\sqrt{n}} \right) + E\left(\sup_{\theta\in{\mathbb{K}}(r_l, r_u)}\frac{\langle h, \sqrt{\mathbf{\Sigma}}\theta \rangle}{\sqrt{n}}\right)\\
+ & = -E\left(\frac{\left\Vert g \right\Vert_2}{\sqrt{n}} \right) + E\left(\sup_{\theta\in{\mathbb{K}}(r_l, r_u)}\frac{\langle \sqrt{\mathbf{\Sigma}}h, \theta \rangle}{\sqrt{n}}\right)
+\end{split}
+\end{equation}
+Since the random vector $g$ is drawn iid from $\mathcal{N}(0,1)$, 
+\begin{equation}
+\begin{split}
+E\left(\frac{\left\Vert g \right\Vert_2}{\sqrt{n}} \right) & = \frac{1}{\sqrt{n}}E\left(\sqrt{\sum_{i=1}^n g_i^2} \right)\\
+ & \geq \frac{1}{n} E\left(\sum_{i=1}^n |g_i| \right)\\
+ & \geq \frac{1}{n}\sum_{i=1}^n E(|g_i|) = E(|g_i|)\\
+ & = 2\int_0^\infty \frac{1}{\sqrt{2\pi}}xe^{-\frac{x^2}{2}}dx = \sqrt{\frac{2}{\pi}}
+\end{split}
+\end{equation}
+The last term in Eq. (30) can also be bound. 
+\begin{equation}
+\begin{split}
+E\left(\sup_{\theta\in{\mathbb{K}}(r_l, r_u)}\frac{\langle \sqrt{\mathbf{\Sigma}}h, \theta \rangle}{\sqrt{n}}\right) & \leq E\left(\sup_{\theta\in{\mathbb{K}}(r_l, r_u)} \left\Vert\theta\right\Vert_1\frac{\left\Vert\sqrt{\mathbf{\Sigma}}h\right\Vert_\infty}{\sqrt{n}}\right)\\
+ & \leq E\left(\frac{\left\Vert\sqrt{\mathbf{\Sigma}}h\right\Vert_\infty}{\sqrt{n}} \right)\left(\sup_{\theta\in{\mathbb{K}}(r_l, r_u)} \left\Vert\theta\right\Vert_1\right)\\
+ & \leq \left[2\rho(\mathbf{\Sigma})\sqrt{\frac{\log d}{n}} \right]\left(\frac{r_u}{2\rho(\mathbf{\Sigma})\sqrt{(\log d) / n}} \right) \\ 
+ & = r_u
+\end{split}
+\end{equation}
+Finally, by combining Eq. (30), (31) and (32), 
+\begin{equation}
+E\left[T(r_l, r_u) \right]\leq - \sqrt{\frac{2}{\pi}} + r_u
+\end{equation}
+With the upper tail bound in Theorem 2.26,
+\begin{equation}
+P\left\{T(r_l, r_u)\geq E\left[T(r_l, r_u) \right] + \delta \right\} \leq e^{-n\delta^2/2}
+\end{equation}
+\begin{equation}
+\begin{split}
+P\left[T(r_l, r_u) \geq \left(- \sqrt{\frac{2}{\pi}} + r_u\right) + \delta \right] & \leq e^{-n\delta^2/2}\\
+P\left[T(r_l, r_u) \geq \left(- \sqrt{\frac{2}{\pi}} + r_u\right) + \left(\sqrt{\frac{2}{\pi}}-\frac{1}{2}+r_u \right) \right] & \leq e^{-n\left(\sqrt{\frac{2}{\pi}}-\frac{1}{2}+r_u \right)^2/2}\\
+ & \leq e^{-\frac{n}{2}\left(\sqrt{\frac{2}{\pi}}-\frac{1}{2}\right)^2}e^{-nr_u^2/2} \\
+ & \leq e^{-\frac{n}{32}}e^{-\frac{n}{2}r_u^2}
+\end{split}
+\end{equation}
+Therefore, by plugging the definition of $T(r_l, r_u)$ and flip the sign, the proof of Lemma 7.24 is complete. 
+\begin{equation}
+P\left[\mathcal{A}(r_l, r_u)\right] \leq e^{-\frac{n}{32}}e^{-\frac{n}{2}r_u^2}
+\end{equation}
+
+\end{proof}
+
+
+Let's now use Lemma 7.24 to continue the proof of Theorem 7.16. 
+
+\begin{proof}[proof of Theorem 7.16 (continued)]
+Now with Lemma 7.24 and setting $\mu = \frac{1}{4}$, we have
+\begin{equation}
+\begin{split}
+P(\mathcal{E}) & \leq P\left[\mathcal{A}(0, \mu)\right] + \sum_{l=1}^\infty P\left[\mathcal{A}(2^{l-1}\mu, 2^l\mu)\right]\\
+ & \leq e^{-\frac{n}{32}}e^{-\frac{n}{2}\mu^2} + \sum_{l=1}^\infty e^{-\frac{n}{32}}e^{-\frac{n}{2}2^{2l}\mu^2} \\
+ & = e^{-\frac{n}{32}}\sum_{l=0}^\infty e^{-\frac{n}{2}2^{2l}\mu^2}\\
+ & \leq e^{-\frac{n}{32}}\sum_{l=0}^\infty e^{-nl\mu^2}\\
+ & = e^{-\frac{n}{32}}\frac{1}{1-e^{-n\mu^2}} = \frac{e^{-\frac{n}{32}}}{1-e^{-\frac{n}{16}}}\\
+ & \leq \frac{e^{-\frac{n}{32}}}{1-e^{-\frac{n}{32}}}
+\end{split}
+\end{equation}
+Combining with Eq. (15) and (17),
+\begin{equation}
+\begin{split}
+\frac{e^{-\frac{n}{32}}}{1-e^{-\frac{n}{32}}} & \geq P(\mathcal{E})\\
+ & \geq P[\mathcal{E}'] = P\left\{\mathbf{X}\in\mathbb{R}^{n\times d} \middle| \inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2^2}{n} \leq \frac{1}{16} - 16\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1^2 \right\} \\
+ & \geq P\left\{\mathbf{X}\in\mathbb{R}^{n\times d} \middle| \inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2^2}{n} \leq \frac{1}{8} - 32\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1^2 \right\}\\
+ & \geq P\left\{\mathbf{X}\in\mathbb{R}^{n\times d} \middle| \inf_{\theta\in\mathbb{S}^{d-1}(\mathbf{\Sigma})} \frac{\left\Vert\mathbf{X}\theta \right\Vert_2^2}{n} \leq \frac{1}{8} - 50\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\theta \right\Vert_1^2 \right\}\\
+ & \geq P\left[Q(\frac{1}{8}, 50) \right]
+\end{split}
+\end{equation}
+Therefore, with $c_1=\frac{1}{8}$ and $c_2=50$, the bound holds. 
+\end{proof}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=4in]{illustration.png}
+  \caption{The diagram of all the event sets discussed. }
+  \label{fig:event}
+\end{figure}
+
+
+It is helpful to visualize the sets of the event discussed and used so far. Fig. 2 shows the relationship among them. The ultimate goal was to upper bound the probability of $\mathcal{Q}(c_1, c_2)$ whose size is determined by constants $c_1$ and $c_2$. For $(c_1, c_2) = \left( \frac{1}{16}, 16\right)$, the event set $\mathcal{Q}$ is the subset of the "bad" event $\mathcal{E}$. Lemma 7.24 further shows that $\mathcal{E}$ is the subset of $\mathcal{A}(0, \mu) \cup \left(\bigcup_{l=1}^\infty \mathcal{A}(2^{l-1}\mu, 2^l\mu) \right)$ whose probability is upper bound using the tail bound property. Closer look into Lemma 7.24 suggests that this bound is very loose because for $r_u > \frac{1}{4}$, $P(\mathcal{A}) = 0$ because $\left\Vert\mathbf{X}\theta \right\Vert_2 \geq 0$. \\
+
+The context is now set up for showing the LASSO Oracle Inequality. Note that there is a minor error in the original proof (in Eq. (7.36)) but the result remains.
+
+\begin{customthm}{7.19}
+Under the condition of Theorem 7.16 and consider the Lagrangian LASSO equation, Eq. (1) with $\lambda_n \geq 2 \Vert\frac{\mathbf{X}'w}{n} \Vert_\infty$. For any $\theta^*\in\mathbb{R}^d$ and optimal solution $\hat{\theta}$ satisfies the bound
+
+\begin{equation}
+\left\Vert\hat{\theta}-\theta^*\right\Vert_2^2 \leq \frac{144\lambda_n^2}{c_1^2\bar{\kappa}^2}|S| + \frac{16\lambda_n}{c_1\bar{\kappa}}\left\Vert\theta^*_{S^C} \right\Vert_1 + \frac{32c_2\rho^2(\mathbf{\Sigma})}{c_1\bar{\kappa}}\frac{\log d}{n}\left\Vert\theta^*_{S^C} \right\Vert_1
+\end{equation}
+where the cardinality of $S$ satisfies
+\begin{equation}
+|S| \leq \frac{c_1\bar{\kappa}}{64c_2\rho^2(\mathbf{\Sigma})}\frac{\log d}{n}
+\end{equation}
+\end{customthm}
+
+\begin{proof}[proof of Theorem 7.19]
+
+Since Theorem 7.16 involves the $l1$-norm, the first goal is to obtain the bound for $\left\Vert \theta \right\Vert_1$. From the first inequality in Eq. (10), 
+\begin{equation}
+\begin{split}
+0 & \leq \lambda_n\left[3\left\Vert \hat{\Delta}_S \right\Vert_1 - \left\Vert \hat{\Delta}_{S^C} \right\Vert_1 + 2\left\Vert \theta^*_{S^C} \right\Vert_1 \right] \\
+ & = \lambda_n\left[3\left\Vert \hat{\Delta}_S \right\Vert_1 - \left(\left\Vert \hat{\Delta}_S \right\Vert_1 - \left\Vert \hat{\Delta} \right\Vert_1\right) + 2\left\Vert \theta^*_{S^C} \right\Vert_1 \right]\\
+ & \leq \lambda_n\left[4\left\Vert \hat{\Delta}_S \right\Vert_1 - \left\Vert \hat{\Delta} \right\Vert_1 + 2\left\Vert \theta^*_{S^C} \right\Vert_1 \right] \\
+\end{split}
+\end{equation}
+\begin{equation}
+\begin{split}
+\left\Vert \hat{\Delta} \right\Vert_1^2 & \leq \left(4\left\Vert \hat{\Delta}_S \right\Vert_1 + 2\left\Vert \theta^*_{S^C} \right\Vert_1\right)^2\\
+ & \leq \left(4\sqrt{|S|}\left\Vert \hat{\Delta}_S \right\Vert_2 + 2\left\Vert \theta^*_{S^C} \right\Vert_1\right)^2\\
+ & \leq \left(4\sqrt{|S|}\left\Vert \hat{\Delta} \right\Vert_2 + 2\left\Vert \theta^*_{S^C} \right\Vert_1\right)^2\\
+ & \leq (1^2 + 1^2)\left[\left(4\sqrt{|S|}\left\Vert \hat{\Delta} \right\Vert_2 \right)^2 + \left( 2\left\Vert \theta^*_{S^C} \right\Vert_1\right)^2 \right]\\
+ & = 32|S|\left\Vert\hat{\Delta} \right\Vert_2^2 + 8\left\Vert \theta^*_{S^C} \right\Vert_1^2
+\end{split}
+\end{equation}
+Now use Theorem 7.16. 
+\begin{equation}
+\begin{split}
+\frac{1}{n}\left\Vert\mathbf{X}\hat{\Delta} \right\Vert_2^2 & \geq c_1\left\Vert\sqrt{\mathbf{\Sigma}}\hat{\Delta} \right\Vert_2^2 - c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert\hat{\Delta} \right\Vert_1\\
+ & \geq c_1\bar{\kappa}\left\Vert\hat{\Delta} \right\Vert_2^2 - c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left(32|S|\left\Vert\hat{\Delta} \right\Vert_2^2 + 8\left\Vert \theta^*_{S^C} \right\Vert_1^2 \right)\\
+ & = \left(c_1\bar{\kappa} - 32c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}|S|\right)\left\Vert\hat{\Delta} \right\Vert_2^2 - 8c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert \theta^*_{S^C} \right\Vert_1^2
+\end{split}
+\end{equation}
+where $\bar{\kappa}$ is the minimum eigenvalue of matrix $\mathbf{\Sigma}$. Using the constraint in the cardinality from Eq. (40), 
+\begin{equation}
+\frac{1}{n}\left\Vert\mathbf{X}\hat{\Delta} \right\Vert_2^2 \geq \frac{1}{2}c_1\bar{\kappa}\left\Vert\hat{\Delta} \right\Vert_2^2 - 8c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert \theta^*_{S^C} \right\Vert_1^2
+\end{equation}
+Now it is left to compare two norms: $\left\Vert\hat{\Delta} \right\Vert_2^2$ and $\left\Vert \theta^*_{S^C} \right\Vert_1^2$. 
+\begin{enumerate}
+\item Let $\frac{1}{4}c_1\bar{\kappa}\left\Vert\hat{\Delta} \right\Vert_2^2 \geq 8c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert \theta^*_{S^C} \right\Vert_1^2$.
+\begin{equation}
+\begin{split}
+\frac{1}{4}c_1\bar{\kappa}\left\Vert\hat{\Delta} \right\Vert_2^2 & \leq \frac{1}{n}\left\Vert\mathbf{X}\hat{\Delta} \right\Vert_2^2 \\
+ & \leq \lambda_n\left[ 3\sqrt{|S|}\left\Vert\hat{\Delta} \right\Vert_2 + 2\left\Vert\theta^*_{S^C} \right\Vert \right]
+\end{split}
+\end{equation}
+Solving for $\left\Vert\hat{\Delta} \right\Vert_2$:
+\begin{equation}
+0 \leq \left\Vert\hat{\Delta} \right\Vert_2 \leq \frac{1}{2}\left[\frac{12\lambda_n\sqrt{|S|}}{c_1\bar{\kappa}} + \sqrt{\frac{144\lambda_n^2|S|}{c_1^2\bar{\kappa}^2} + \frac{32\lambda_n\left\Vert\theta^*_{S^C} \right\Vert_1}{c_1\bar{\kappa}}} \right] \\ 
+\end{equation}
+\begin{equation}
+\begin{split}
+0 \leq \left\Vert\hat{\Delta} \right\Vert_2^2 & \leq \frac{1}{4}\left[\frac{12\lambda_n\sqrt{|S|}}{c_1\bar{\kappa}} + \sqrt{\frac{144\lambda_n^2|S|}{c_1^2\bar{\kappa}^2} + \frac{32\lambda_n\left\Vert\theta^*_{S^C} \right\Vert_1}{c_1\bar{\kappa}}} \right]^2 \\
+ & \leq \frac{1}{4}(1^2+1^2)\left[\frac{288\lambda_n^2|S|}{c_1^2\bar{\kappa}^2} + \frac{32\lambda_n\left\Vert\theta^*_{S^C} \right\Vert_1}{c_1\bar{\kappa}} \right] \\ 
+ & = \frac{144\lambda_n^2}{c_1^2\bar{\kappa}^2}|S| + \frac{16\lambda_n}{c_1\bar{\kappa}}\left\Vert\theta^*_{S^C} \right\Vert_1
+\end{split}
+\end{equation}
+
+
+\item Otherwise, $\frac{1}{4}c_1\bar{\kappa}\left\Vert\hat{\Delta} \right\Vert_2^2 < 8c_2\rho^2(\mathbf{\Sigma})\frac{\log d}{n}\left\Vert \theta^*_{S^C} \right\Vert_1^2$.
+
+\begin{equation}
+\left\Vert\hat{\Delta} \right\Vert_2^2 < \frac{32c_2\rho^2(\mathbf{\Sigma})}{c_1\bar{\kappa}}\frac{\log d}{n}\left\Vert\theta^*_{S^C} \right\Vert_1
+\end{equation}
+\end{enumerate}
+
+
+Combining both cases by summing up both upper bounds, 
+\begin{equation}
+\left\Vert\hat{\Delta} \right\Vert_2^2 = \left\Vert\hat{\theta} - \theta^* \right\Vert_2^2 \leq \frac{144\lambda_n^2}{c_1^2\bar{\kappa}^2}|S| + \frac{16\lambda_n}{c_1\bar{\kappa}}\left\Vert\theta^*_{S^C} \right\Vert_1 + \frac{32c_2\rho^2(\mathbf{\Sigma})}{c_1\bar{\kappa}}\frac{\log d}{n}\left\Vert\theta^*_{S^C} \right\Vert_1
+\end{equation}
+which completes the proof. 
+
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section*{Simulation Studies}
+
+I am interested in running simulations to check and visualize the bound in Eq. (20), i.e. $P\left[\mathcal{A}(r_l, r_u)\right] \leq e^{-\frac{n}{32}}e^{-\frac{n}{2}r_u^2}$. The major challenge here is to sample $\theta$ from the space $\theta\in\mathbb{K}(r_l, r_u)$, or equivalently, to sample from an ellipse surface in high dimensional space: $\mathbb{S}^{d-1}(\mathbf{\Sigma})=\left\{ \theta\in\mathbb{R}^d\middle| \theta'\mathbf{\Sigma}\theta=1\right\}$. This challenge can be tackled by the random-walk Metropolis-Hastings algorithm described as follows. 
+
+
+\begin{figure}[t!]
+    \centering
+    \begin{subfigure}
+        \centering
+        \includegraphics[width=2in]{mh2d.png}
+    \end{subfigure}
+    \begin{subfigure}
+        \centering
+        \includegraphics[width=2in]{mh3d.png}
+    \end{subfigure}
+    \begin{subfigure}
+        \centering
+        \includegraphics[width=2in]{mhhd.png}
+    \end{subfigure}
+    \caption{The demonstration of sampling from a high-dimensional ellipse surface using random-walk Metropolis-Hastings algorithm. (Left) The two-dimensional ellipse. (Middle) The three-dimensional case. (Right) The 500-dimensional with x- and y-axis being the sample number and $x'\mathbf{\Sigma}x$ value, which is close to 1 by definition. }
+\end{figure}
+
+
+\begin{enumerate}
+\item Generate the $(k+1)$\textsuperscript{th} sample $x_{k+1}$ from $x_k$. 
+\begin{equation}
+x_{k+1} \sim \mathcal{N}(x_k, \sigma^2I_d)
+\end{equation}
+\item Calculate the un-normalized probability from the symmetric kernel which decays super fast with the distance between $x_{k+1}$ and the ellipse surface.
+\begin{equation}
+p(x_{k+1}|x_k) \propto e^{-k|x_{k+1}'\mathbf{\Sigma}x_{k+1} - 1|}
+\end{equation}
+\item Compute the acceptance rate $\alpha$. 
+\begin{equation}
+\alpha = \min\left(1, \frac{e^{-k|x_{k+1}'\mathbf{\Sigma}x_{k+1} - 1|}}{e^{-k|x_{k}'\mathbf{\Sigma}x_{k} - 1|}} \right)
+\end{equation}
+\item Generate a random variable $u \sim U[0,1]$. If $u<\alpha$, accept $x_{k+1}$. 
+\end{enumerate}
+The samples $x_1, x_2, \dots, x_N$ will be on the surface of this high dimensional ellipse. I demonstrate the performance of the random-walk M-H algorithm in Fig. 3. With this sampling tool, the goal is to numerically examine the bound for $P\left[\mathcal{A}(r_l, r_u)\right]$. 
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in]{simulation.png}
+  \caption{The simulation result for the \textit{inf-norm} using all the combinations of $n$ and$r_u$. See the main text for detailed explanation. }
+  \label{fig:event}
+\end{figure}
+
+
+I ran the simulation using 25,000 samples on the 500-dimensional ellipse surface for $r_u\in\left\{\frac{1}{4}, \frac{1}{2}, 1, \dots, 18024\right\}$ and the number of rows in $\mathbf{X}$, $n\in\{50,60,70,\dots,250\}$. The sparsity setup is satisfied for $d > n$. For each combination of radii pair $(\frac{1}{2}r_u, r_u)$ and $n$, I didn't find any event of $\mathcal{A}(r_l, r_u)$. The reason is the following. The event $\mathcal{A}(r_l, r_u)$ requires small $r_u$, i.e. $r_u\leq\frac{1}{4}$ but under such condition, the set $\mathbb{K}(r_l, r_u)$ is empty. As $r_u$ increases, the set $\mathbb{K}(r_l, r_u)$ is non-empty but the event $\mathcal{A}(r_l, r_u)$ becomes impossible because $\left\Vert\mathbf{X}\theta \right\Vert_2 \geq 0$. There might be a sweet spot between these two trade-offs depending on the design of the matrix $\mathbf{\Sigma}$ but the event is extremely rare if not impossible. 
+
+
+
+Essentially, the aim for Theorem 7.16 and Lemma 7.24 is to investigate the quantity $\inf_\theta \frac{1}{\sqrt{n}}\left\Vert\mathbf{X}\theta \right\Vert_2$ which I refer to it as \textit{inf-norm}. The \textit{inf-norm} for my simulation is shown in Fig. 4 for all the $n$ tested. The shaded regions represent the standard deviations from 1000 generated random matrices $\mathbf{X}$. Notice that if $r_u$ is too large or too small, the set $\mathbb{K}(r_l, r_u)$ is empty and there is no statistics to report. For this specific matrix $\mathbf{\Sigma}$, I found that only when $r_u\in[128, 4096]$ does the corresponding $l1$-ball intersect with the ellipse. However, for such $r_u$, $P\left[\mathcal{A}(r_l, r_u)\right] = 0 \leq \epsilon$ for an arbitrary $\epsilon\geq 0$. Therefore, the bounds in Theorem 7.16 is very loose and better bound (but still loose)  can achieved by picking $c_1$ and $c_2$ more carefully. 
+
+
+
+\end{document}
